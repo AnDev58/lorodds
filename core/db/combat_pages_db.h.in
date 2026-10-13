@@ -1,0 +1,63 @@
+#pragma once
+#include <algorithm>
+#include <array>
+#include <cstdint>
+#include <optional>
+#include <ranges>
+#include <span>
+#include <string_view>
+
+namespace lor_odds_core {
+
+enum class PageType : uint8_t { Melee, Ranged };
+enum class PageLevel : uint8_t {
+  Canard, UrbanMyth, UrbanLegend, UrbanPlague, 
+  UrbanNightmare, StarOfTheCity, ImpuritasCivitatis
+};
+enum class PageRarity : uint8_t { Paperback, Hardcover, Limited, ObjectDArt };
+enum class DieType : uint8_t { Slash, Pierce, Blunt, Block, Evade };
+
+struct Die {
+  DieType type;
+  uint8_t minRoll;
+  uint8_t maxRoll;
+};
+
+struct CombatPage {
+  std::string_view name;
+  PageType type;
+  PageLevel level;
+  PageRarity rarity;
+  uint8_t cost;
+  uint32_t dice_offset;
+  uint8_t dice_count;
+};
+
+class CombatPagesDB {
+public:
+  [[nodiscard]] static constexpr std::span<const Die>
+  get_dice(const CombatPage &page) noexcept {
+    return std::span<const Die>(all_dice.data() + page.dice_offset, page.dice_count);
+  }
+
+  [[nodiscard]] static constexpr std::optional<CombatPage>
+  find_page(std::string_view page_name) noexcept {
+    auto it{std::ranges::find(combat_pages, page_name, &CombatPage::name)};
+    return (it != combat_pages.end()) ? std::make_optional(*it) : std::nullopt;
+  }
+
+  [[nodiscard]] static constexpr std::span<const CombatPage> get_all_pages() noexcept {
+    return combat_pages;
+  }
+
+private:
+  static inline constexpr std::array<Die, @TOTAL_DICE_COUNT@> all_dice = {{
+@DICE_POOL@
+  }};
+
+  static inline constexpr std::array<CombatPage, @COMBAT_PAGES_AMOUNT@> combat_pages = {{
+@COMBAT_PAGES@
+  }};
+};
+
+} // namespace lor_odds_core

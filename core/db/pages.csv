@@ -1,0 +1,13 @@
+Evade,Melee,Canard,Paperback,0,Evade,1,4,,,,,,
+Light Attack,Melee,Canard,Paperback,1,Pierce,2,3,Blunt,1,4,,,
+Light Defense,Melee,Canard,Paperback,1,Evade,1,5,Block,2,3,Slash,1,2
+Charge and Cover,Melee,Canard,Paperback,2,Pierce,3,6,Block,2,6,,,
+Focused Strikes,Melee,Canard,Paperback,3,Slash,3,5,Slash,3,5,Pierce,1,3
+Dodge and Strike,Melee,Canard,Paperback,0,Evade,1,4,Slash,1,2,,,
+Thrust,Melee,Canard,Paperback,1,Pierce,1,4,Pierce,1,4,,,
+Wallop,Melee,Canard,Paperback,2,Blunt,2,6,Blunt,2,4,,,
+Preemptive Strike,Melee,Canard,Paperback,2,Slash,3,5,Evade,1,8,,,
+Quickness,Melee,Canard,Paperback,1,Blunt,1,4,Evade,1,6,,,
+Gut Harvesting,Melee,Canard,Limited,3,Slash,3,6,Slash,3,5,Block,1,4
+Rats’ Guide to Survival,Melee,Canard,Paperback,2,Block,1,6,Slash,3,4,Evade,1,7
+Dirty Blow,Melee,Canard,Limited,2,Blunt,3,7,Block,1,3,,,
