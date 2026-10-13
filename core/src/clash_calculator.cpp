@@ -29,6 +29,8 @@ double outroll_odds(std::pair<uint8_t, uint8_t> our_die,
 }
 
 ClashIterator::ClashIterator(CombatPage our_page, CombatPage enemy_page) {
+  our_page_type = our_page.type;
+  enemy_page_type = enemy_page.type;
   for (Die our_die : CombatPagesDB::get_dice(our_page))
     our_dice_queue.emplace(our_die);
   for (Die enemy_die : CombatPagesDB::get_dice(enemy_page))
@@ -37,24 +39,60 @@ ClashIterator::ClashIterator(CombatPage our_page, CombatPage enemy_page) {
   roll_next();
 }
 
+bool ClashIterator::force_next_clash_win() {
+  if (!is_current_clash_decided_by_dice())
+    return false;
+  forced_outcome = ForcedOutcome::Win;
+  return true;
+}
+
+bool ClashIterator::force_next_clash_lose() {
+  if (!is_current_clash_decided_by_dice())
+    return false;
+  forced_outcome = ForcedOutcome::Lose;
+  return true;
+}
+
 void ClashIterator::roll_next() {
+  // The clash sequence ends as soon as either side runs out of dice.
+  if (our_dice_queue.empty() || enemy_dice_queue.empty()) {
+    is_end = true;
+    clash_result.reset();
+    return;
+  }
+
+  // A forced outcome overrides `was_clash_win` for the transition into the
+  // next clash (and therefore decides which side's die gets recycled).
+  const bool effective_was_clash_win = [this] {
+    switch (forced_outcome) {
+    case ForcedOutcome::Win:
+      return true;
+    case ForcedOutcome::Lose:
+      return false;
+    case ForcedOutcome::None:
+      return was_clash_win;
+    }
+    return was_clash_win;
+  }();
+  forced_outcome = ForcedOutcome::None;
+
   if (clash_result.has_value()) {
     if (clash_result->enemy_die.has_value() &&
         clash_result->our_die.has_value()) {
       // TODO: calculate probable damage
       if (clash_result->our_die->type < DieType::Block &&
           clash_result->enemy_die->type < DieType::Block) {
-        if (was_clash_win && enemy_page_type == PageType::Ranged) {
-          our_dice_queue.push(our_dice_queue.front());
-        } else if (!was_clash_win && our_page_type == PageType::Ranged) {
+        if (effective_was_clash_win && enemy_page_type == PageType::Ranged) {
           enemy_dice_queue.push(enemy_dice_queue.front());
+        } else if (!effective_was_clash_win && our_page_type == PageType::Ranged) {
+          our_dice_queue.push(our_dice_queue.front());
         }
       }
 
-      if (was_clash_win && clash_result->our_die->type == DieType::Evade &&
+      if (effective_was_clash_win && clash_result->our_die->type == DieType::Evade &&
           clash_result->enemy_die->type < DieType::Block) {
         enemy_dice_queue.pop();
-      } else if (!was_clash_win &&
+      } else if (!effective_was_clash_win &&
                  clash_result->enemy_die->type == DieType::Evade &&
                  clash_result->our_die->type < DieType::Block) {
         our_dice_queue.pop();

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <combat_pages_db.h>
 #include <cstddef>
 #include <cstdint>
@@ -29,6 +31,28 @@ public:
 
   bool was_clash_win{false};
 
+  // Ranged-page dice recycling: when the current clash is decided by dice
+  // that can be recycled (the page owning the losing die is Ranged), that
+  // side's front die is pushed to the back of its queue instead of being
+  // discarded. These helpers expose that state without needing to advance
+  // the iterator.
+  [[nodiscard]] bool our_die_can_be_recycled() const {
+    return is_current_clash_decided_by_dice() && our_page_type == PageType::Ranged;
+  }
+  [[nodiscard]] bool enemy_die_can_be_recycled() const {
+    return is_current_clash_decided_by_dice() && enemy_page_type == PageType::Ranged;
+  }
+
+  // Overrides the outcome of the current clash (i.e. forces the value that
+  // `was_clash_win` would otherwise have after advancing). This changes how
+  // the next clash is built: if the overridden outcome implies dice
+  // recycling (see *_die_can_be_recycled), the corresponding front die is
+  // copied to the back of its queue instead of being popped.
+  // Returns false and leaves the iterator untouched when the current clash
+  // cannot be decided by dice (e.g. an evaded or unopposed die).
+  bool force_next_clash_win();
+  bool force_next_clash_lose();
+
   ClashIterator(CombatPage our_page, CombatPage enemy_page);
   ClashIterator() : is_end(true) {};
 
@@ -56,6 +80,17 @@ private:
   PageType our_page_type;
   std::queue<UsedDie> enemy_dice_queue;
   PageType enemy_page_type;
+
+  // Set by force_next_clash_win/lose; consumed (and cleared) by roll_next.
+  enum class ForcedOutcome : uint8_t { None, Win, Lose };
+  ForcedOutcome forced_outcome{ForcedOutcome::None};
+
+  [[nodiscard]] bool is_current_clash_decided_by_dice() const {
+    return clash_result.has_value() && clash_result->our_die.has_value() &&
+           clash_result->enemy_die.has_value() &&
+           clash_result->our_die->type < DieType::Block &&
+           clash_result->enemy_die->type < DieType::Block;
+  }
 
   void roll_next();
 };
