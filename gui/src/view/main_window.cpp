@@ -9,8 +9,6 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(std::make_unique<Ui::MainWindow>()) {
   ui->setupUi(this);
-
-  ui->page_bg->lower();
   createPageBacking();
 
   rotateElements();
@@ -31,17 +29,6 @@ void MainWindow::createPageBacking() {
 }
 
 void MainWindow::rotateElements() {
-  QPixmap original = ui->page_logo->pixmap();
-  if (!original.isNull()) {
-    QPixmap scaled{original.scaled(ui->page_logo->size(), Qt::KeepAspectRatio,
-                                   Qt::SmoothTransformation)};
-    QTransform transform;
-    transform.rotate(kPageTiltAngle);
-    QPixmap rotated = scaled.transformed(transform, Qt::SmoothTransformation);
-    ui->page_logo->setFixedSize(rotated.size());
-    ui->page_logo->setPixmap(rotated);
-  }
-
   ui->dice_queue_small->setGraphicsEffect(
       new RotationEffect(kPageTiltAngle, this));
   ui->page_name->setGraphicsEffect(new RotationEffect(kPageTiltAngle, this));
