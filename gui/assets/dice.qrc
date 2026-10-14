@@ -1,0 +1,12 @@
+<RCC>
+  <qresource prefix="defaultDice">
+    <file>dice/Block.png</file>
+    <file>dice/Blunt.png</file>
+    <file>dice/Evade.png</file>
+    <file>dice/Pierce.png</file>
+    <file>dice/Slash.png</file>
+  </qresource>
+  <qresource prefix="speedDice">
+    <file>BreakedSpeedDice.png</file>
+  </qresource>
+</RCC>

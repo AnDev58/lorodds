@@ -1,0 +1,30 @@
+<RCC>
+  <qresource prefix="paperback">
+    <file>paperback/bg.png</file>
+    <file>paperback/Melee.png</file>
+    <file>paperback/Ranged.png</file>
+  </qresource>
+  <qresource prefix="dummy">
+    <file>no_page.png</file>
+  </qresource>
+  <qresource prefix="hardcover">
+    <file>hardcover/bg.png</file>
+    <file>hardcover/Melee.png</file>
+    <file>hardcover/Ranged.png</file>
+  </qresource>
+  <qresource prefix="limited">
+    <file>limited/bg.png</file>
+    <file>limited/Melee.png</file>
+    <file>limited/Ranged.png</file>
+  </qresource>
+  <qresource prefix="objectDArt">
+    <file>oda/bg.png</file>
+    <file>oda/Melee.png</file>
+    <file>oda/Ranged.png</file>
+  </qresource>
+  <qresource prefix="EGO">
+    <file>ego/bg.png</file>
+    <file>ego/Melee.png</file>
+    <file>ego/Ranged.png</file>
+  </qresource>
+</RCC>
